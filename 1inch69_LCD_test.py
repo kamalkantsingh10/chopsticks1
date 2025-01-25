@@ -6,7 +6,6 @@ import sys
 import time
 import logging
 import spidev as SPI
-sys.path.append("..")
 from hw_drivers.display import LCD_1inch69
 from PIL import Image, ImageDraw, ImageFont
 
@@ -83,8 +82,8 @@ try:
     time.sleep(2)   
     
     logging.info("show image")
-    ImagePath = ["/home/kamal/projects/chopsticks1/trials/LCD_1inch69_4.jpg", "/home/kamal/projects/chopsticks1/trials/LCD_1inch69_6.jpg", "../pic/LCD_1inch69_6.jpg"]
-    for i in range(0, 3):
+    ImagePath = ["/home/kamal/projects/chopsticks1/trials/LCD_1inch69_4.jpg", "/home/kamal/projects/chopsticks1/trials/LCD_1inch69_6.jpg"]
+    for i in range(0, 2):
         image = Image.open(ImagePath[i])	
         # image = image.rotate(0)
         disp.ShowImage(image)
