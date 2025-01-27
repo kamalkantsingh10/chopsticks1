@@ -18,7 +18,7 @@ def run_servo(n, angle=20):
         time.sleep(delay)
 
     servo0.angle(0)                                                                                                                                                                                                                                                                                                                                                                                                                                           
-    time.sleep(1)
+    time.sleep(3)
     
 
 
