@@ -4,6 +4,6 @@ from neck import demo_neck
 
 
 
-demo_neck()
-demo_tail()
+# demo_neck()
+# demo_tail()
 demo_legs()
