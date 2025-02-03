@@ -2,9 +2,10 @@ from robot_hat import Servo
 import time
 
 FRONT_RIGHT_LEG_PINS = (5, 7)
-FRONT_LEFT_LEG_PINS =  (4,6)
+FRONT_LEFT_LEG_PINS = (4, 6)
 BACK_RIGHT_LEG_PINS = (8, 10)
-BACK_LEFT_LEG_PINS =  (9,11)
+BACK_LEFT_LEG_PINS = (9, 11)
+
 class TheoJansenLeg:
     def __init__(self, inner_pin, outer_pin):
         self.inner_servo = Servo(f"P{inner_pin}")
@@ -16,7 +17,7 @@ class TheoJansenLeg:
         
     def _move_servo_smooth(self, servo, start_angle, end_angle, step=1):
         direction = 1 if end_angle > start_angle else -1
-        for angle in range(int(start_angle), int(end_angle), direction):
+        for angle in range(int(start_angle), int(end_angle), direction * step):
             servo.angle(angle)
             time.sleep(self.delay)
             
@@ -81,6 +82,43 @@ class QuadrupedController:
         time.sleep(1)
         leg.reset_position()
     
+    def rise(self, angle):
+        self.front_right.move_leg(angle, angle)
+        self.front_left.move_leg(angle, angle)
+        self.back_right.move_leg(angle, angle)
+        self.back_left.move_leg(angle, angle)
+    
+    def walk(self, speed):
+        if speed <= 0:
+            raise ValueError("Speed must be a positive number")
+        step_delay = 0.1 / speed
+        step_angle = 30  # Adjust based on optimal walking angle for the robot
+        
+        # Set delays for smooth movement based on speed
+        self.front_right.delay = step_delay
+        self.front_left.delay = step_delay
+        self.back_right.delay = step_delay
+        self.back_left.delay = step_delay
+        
+        # Diagonal legs swing forward (raise) and back (lower)
+        # Front Right and Back Left move
+        self.front_right.move_leg(step_angle, step_angle)
+        self.back_left.move_leg(step_angle, step_angle)
+        time.sleep(step_delay * abs(step_angle) * 2)  # Approximate time for movement
+        
+        self.front_right.move_leg(-step_angle, -step_angle)
+        self.back_left.move_leg(-step_angle, -step_angle)
+        time.sleep(step_delay * abs(step_angle) * 2)
+        
+        # Front Left and Back Right move
+        self.front_left.move_leg(step_angle, step_angle)
+        self.back_right.move_leg(step_angle, step_angle)
+        time.sleep(step_delay * abs(step_angle) * 2)
+        
+        self.front_left.move_leg(-step_angle, -step_angle)
+        self.back_right.move_leg(-step_angle, -step_angle)
+        time.sleep(step_delay * abs(step_angle) * 2)
+
 def demo_legs_1by1():
     controller = QuadrupedController()
     legs = ['front_right', 'front_left', 'back_right', 'back_left']
@@ -90,17 +128,16 @@ def demo_legs_1by1():
         controller.demo_leg(leg)
     time.sleep(1)
 
-
-def demo_legs():
-    # First set the global pin numbers according to your setup
-    # FRONT_RIGHT_LEG_PINS = (4, 5)
-    # FRONT_LEFT_LEG_PINS = (6, 7)
-    # BACK_RIGHT_LEG_PINS = (8, 9)
-    # BACK_LEFT_LEG_PINS = (10, 11)
-    
+def demo_walk(speed=1):
     controller = QuadrupedController()
     
-    # Test sequence
+    print("Testing walk...")
+    controller.rise(40)
+    
+
+def demo_legs():
+    controller = QuadrupedController()
+    
     print("Testing leg movements...")
     
     print("Raising front...")
@@ -133,3 +170,4 @@ def demo_legs():
     
     print("Final reset...")
     controller.reset_all()
+
