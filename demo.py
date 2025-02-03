@@ -7,4 +7,7 @@ from neck import demo_neck
 # demo_neck()
 # demo_tail()
 #demo_legs()
-demo_walk()
+demo_walk(speed=1)
+
+
+
