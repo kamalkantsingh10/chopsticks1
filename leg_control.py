@@ -1,10 +1,10 @@
 from robot_hat import Servo
 import time
 
-FRONT_RIGHT_LEG_PINS = (5, 7)
-FRONT_LEFT_LEG_PINS = (4, 6)
-BACK_RIGHT_LEG_PINS = (8,10)
-BACK_LEFT_LEG_PINS = (9,11)
+FRONT_RIGHT_LEG_PINS = (6, 7)
+FRONT_LEFT_LEG_PINS = (5, 4)
+BACK_RIGHT_LEG_PINS = (9,10)
+BACK_LEFT_LEG_PINS = (8,11)
 
 class TheoJansenLeg:
     def __init__(self, inner_pin, outer_pin):
@@ -132,8 +132,8 @@ class QuadrupedController:
         self.back_left.move_leg(-40, -40)
         time.sleep(0.5)
         # Slightly adjust front for balance
-        self.front_right.move_leg(10, 10)
-        self.front_left.move_leg(10, 10)
+        self.front_right.move_leg(40, 40)
+        self.front_left.move_leg(40, 40)
         time.sleep(2)  # Hold the sit position
 
     def stand(self):
@@ -145,10 +145,10 @@ class QuadrupedController:
         # Lower back first
         self.back_right.move_leg(-40, -40)
         self.back_left.move_leg(-40, -40)
-        time.sleep(0.5)
+        time.sleep(0.1)
         # Then lower front
-        self.front_right.move_leg(-30, -30)
-        self.front_left.move_leg(-30, -30)
+        self.front_right.move_leg(-40, -40)
+        self.front_left.move_leg(-40, -40)
         time.sleep(2)  # Hold the position
 
     def beg(self):

@@ -8,10 +8,13 @@ else:
     text_to_say = "chopsticks is bored"  # Default text if no arguments are provided
 
 # Initialize the TTS class
-tts = TTS(lang='en-GB', engine="espeak")
+tts = TTS(lang='it-IT', engine="espeak")
 
 # Read the text
-tts.say(text_to_say)
+tts.say("chopsticks is bored")
+tts.say("chopsticks is happy")
+tts.say("chopsticks is sad")
+tts.say("chopsticks is sleepy")
 
 # Display all supported languages
 print(tts.supported_lang())
