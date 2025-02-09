@@ -1,0 +1,15 @@
+tail:
+    pin: "P1"
+    min_angle: -70
+    max_angle: 70
+    default_speed: 0.5
+pan:
+    pin: "P2"
+    min_angle: -90
+    max_angle: 90
+    default_speed: 0.3
+tilt:
+    pin: "P3"
+    min_angle: -40
+    max_angle: 40
+    default_speed: 0.5

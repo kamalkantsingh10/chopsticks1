@@ -2,10 +2,17 @@ from trials.test_servo import run_servo
 
 
 
-run_servo(1)  # f
-run_servo(2)  # f 
-run_servo(3)  # f
-run_servo(1)  # f    
+
+
+
+
+
+
+
+# run_servo(1)  # f
+# run_servo(2)  # f 
+# run_servo(3)  # f
+# run_servo(1)  # f    
 
 
 
