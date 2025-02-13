@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 
 
-from emotions.enums import Intensity,ServoConfig,Position
+from core.enums import Intensity,ServoConfig,Position
 
 class LegController:
     """
@@ -30,6 +30,10 @@ class LegController:
         pass
     
     def move(self, direction: Position, speed: float) -> None:
+        """Control movement"""
+        pass
+
+    def express(self, emotion: Position, intensity: float) -> None:
         """Control movement"""
         pass
     

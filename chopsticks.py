@@ -90,15 +90,9 @@ class RobotDog:
                                    
                 self.legs.set_pose(action.get("pose", "neutral"),
                                  action.get("speed", 0.5))
-                                 
-            elif "action" == "breathing":
-                # Sleep breathing
-                self.display.set_expression(action["face"], Intensity.MILD)
-                # Gentle body movement for breathing
-                self.legs.set_pose("breathing", 0.2)
                 
         except Exception as e:
-            logging.error(f"Error executing action: {e}")
+            print(f"Error executing action: {e}")
     
     def show_emotion(self, emotion: Emotion, intensity: Intensity, speak: Optional[str] = None) -> None:
         """Main method for LLM to trigger emotions"""
@@ -120,13 +114,7 @@ class RobotDog:
             self._execute_action(action)
             time.sleep(action["duration"])
         self._execute_action(sequence["final_state"])
-    
-        
-    def show_emotion(self, emotion: Emotion, intensity: Intensity, speak: Optional[str] = None) -> None:
-        """Main method for LLM to trigger emotions"""
-        params = self.emotion_engine.show_emotion(emotion, intensity, speak)
-        # Coordinate all components based on params
-        
+     
     def cleanup(self) -> None:
         """Cleanup all components"""
         self.tail.cleanup()

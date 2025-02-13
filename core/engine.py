@@ -4,7 +4,7 @@ import time
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 
-from emotions.enums import EmotionConfig, Intensity,Position, Emotion,Mode
+from core.enums import EmotionConfig, Intensity,Position, Emotion,Mode
 
 
 

@@ -11,6 +11,7 @@ dependencies = [
     "spidev (>=3.6,<4.0)",
     "rpi-gpio (>=0.7.1,<0.8.0)",
     "numpy (>=2.2.2,<3.0.0)",
+    "adafruit-circuitpython-ssd1306 (>=2.12.19,<3.0.0)",
 ]
 
 
