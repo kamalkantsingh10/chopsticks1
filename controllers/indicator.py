@@ -4,6 +4,7 @@ import logging
 import time
 from hw_drivers.display.o91inch import OLED_0in91
 from PIL import Image, ImageDraw, ImageFont
+from robot_hat import utils
 
 def get_cpu_temp():
     try:
@@ -16,51 +17,73 @@ def get_cpu_temp():
 
 def indicator():
     try:
-        # Initialize display once
         disp = OLED_0in91.OLED_0in91()
         disp.Init()
         
-        # Font paths
         font_path = '/home/kamal/projects/chopsticks1/hw_drivers/display/Font/Font00.ttf'
-        font1 = ImageFont.truetype(font_path, 12)
-        font2 = ImageFont.truetype(font_path, 18)
+        font1 = ImageFont.truetype(font_path, 18)
+
+        # Segment settings
+        segments = 10  # Number of segments
+        segment_gap = 2  # Gap between segments
 
         while True:
-            # Create new image
-            image1 = Image.new('1', (disp.width, disp.height), "WHITE")
+            #disp.clear()
+            image1 = Image.new('1', (disp.width, disp.height), 0)
             draw = ImageDraw.Draw(image1)
 
-            # Draw border
-            draw.line([(0,0),(127,0)], fill=0)
-            draw.line([(0,0),(0,31)], fill=0)
-            draw.line([(0,31),(127,31)], fill=0)
-            draw.line([(127,0),(127,31)], fill=0)
+            # Fill background white
+            draw.rectangle((0, 0, disp.width-1, disp.height-1), fill=1)
 
-            # Get and display temperature
+            # Get sensor values
+            battery_voltage = utils.get_battery_voltage()
             temp = get_cpu_temp()
-            if temp is not None:
-                temp_str = f'Temp: {temp:.1f}C'
-                draw.text((20,0), 'Waveshare', font=font1, fill=0)
-                draw.text((20,15), temp_str, font=font1, fill=0)
 
-            # Ensure display is on
-            disp.command(0xAF)  # Display ON
+            # Calculate battery percentage (6V-8.4V range)
+            min_voltage = 6.0
+            max_voltage = 8.0
+            battery_percentage = min(100, max(0, ((battery_voltage - min_voltage) / (max_voltage - min_voltage)) * 100))
+
+            # Battery bar dimensions (2/3 of screen width)
+            bar_width = int(disp.width * 2/3)
             
-            # Update display
+            # Draw battery outline
+            draw.rectangle((0, 0, bar_width, disp.height-1), fill=1, outline=0)
+            
+            # Calculate segment dimensions
+            segment_width = (bar_width - (segments + 1) * segment_gap) // segments
+            filled_segments = int((battery_percentage / 100) * segments)
+
+            # Draw segments
+            for i in range(segments):
+                x1 = segment_gap + i * (segment_width + segment_gap)
+                x2 = x1 + segment_width
+                y1 = 2
+                y2 = disp.height 
+                
+                if i < filled_segments:
+                    # Fill segment for battery level
+                    draw.rectangle((x1, y1, x2, y2), fill=0)
+
+            # Temperature in remaining 1/3
+            if temp is not None:
+                temp_text = f" {temp:.0f}C"
+                # Center text in remaining space
+                text_width = font1.getlength(temp_text)
+                text_x = bar_width + 8+((disp.width - bar_width) - text_width) // 2
+                text_y = (disp.height - 24) // 2
+                draw.text((text_x, text_y), temp_text, font=font1, fill=0)
+
+            # Ensure display is on and update
+            disp.command(0xAF)
             image1 = image1.rotate(0)
             disp.ShowImage(disp.getbuffer(image1))
             
-            # Commands to keep display active
-            disp.command(0x81)  # Set contrast
-            disp.command(0xFF)  # Maximum contrast
-            disp.command(0x8D)  # Charge pump
-            disp.command(0x14)  # Enable charge pump
-            
-            time.sleep(2)
+            time.sleep(30)
 
     except KeyboardInterrupt:
         print("Program stopped by user")
-        disp.command(0xAE)  # Display OFF
+        disp.command(0xAE)
         disp.clear()
         sys.exit(0)
     except Exception as e:

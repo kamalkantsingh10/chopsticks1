@@ -145,4 +145,6 @@ def demo_body():
     
 
 if __name__ == "__main__":
+    #demo_face()
+    
     indicator()

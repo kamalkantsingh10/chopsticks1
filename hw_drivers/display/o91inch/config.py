@@ -38,32 +38,20 @@ Device_SPI = 0
 Device_I2C = 1
 
 class RaspberryPi:
-    def __init__(self,spi=spidev.SpiDev(0,0),spi_freq=10000000,rst = 27,dc = 25,bl = 18,bl_freq=1000,i2c=None):
+    def __init__(self,spi_freq=10000000,bl_freq=1000,i2c=None):
         self.INPUT = False
         self.OUTPUT = True
         
         self.SPEED  =spi_freq
 
-        if(Device_SPI == 1):
-            self.Device = Device_SPI
-            self.spi = spi
-        else :
-            self.Device = Device_I2C
-            self.address = 0x3c
-            self.bus = SMBus(1)
         
-        self.RST_PIN = self.gpio_mode(rst,self.OUTPUT)
-        self.DC_PIN = self.gpio_mode(dc,self.OUTPUT)
+        self.Device = Device_I2C
+        self.address = 0x3C
+        self.bus = SMBus(1)
 
 
     def delay_ms(self,delaytime):
         time.sleep(delaytime / 1000.0)
-
-    def gpio_mode(self,Pin,Mode,pull_up = None,active_state = True):
-        if Mode:
-            return DigitalOutputDevice(Pin,active_high = True,initial_value =False)
-        else:
-            return DigitalInputDevice(Pin,pull_up=pull_up,active_state=active_state)
 
     def digital_write(self, Pin, value):
         if value:
@@ -80,20 +68,8 @@ class RaspberryPi:
     def i2c_writebyte(self,reg, value):
         self.bus.write_byte_data(self.address, reg, value)
     
-    def module_init(self): 
-        self.digital_write(self.RST_PIN,False)
-        if(self.Device == Device_SPI):
-            self.spi.max_speed_hz = self.SPEED
-            self.spi.mode = 0b11  
-        self.digital_write(self.DC_PIN,False)
-        return 0
 
     def module_exit(self):
-        if(self.Device == Device_SPI):
-            self.spi.close()
-        else :
-            self.bus.close()
-        self.digital_write(self.RST_PIN,False)
-        self.digital_write(self.DC_PIN,False)
+        self.bus.close()
 
 ### END OF FILE ###

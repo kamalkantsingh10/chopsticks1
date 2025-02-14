@@ -27,17 +27,17 @@
 # THE SOFTWARE.
 #
 
-from hw_drivers.display.o91inch.config import config
+from hw_drivers.display.o91inch.config import RaspberryPi,Device_SPI,Device_I2C
 import time
 import numpy as np
 
-Device_SPI = config.Device_SPI
-Device_I2C = config.Device_I2C
+Device_SPI = Device_SPI
+Device_I2C = Device_I2C
 
 OLED_WIDTH   = 128 #OLED width
 OLED_HEIGHT  = 32  #OLED height
 
-class OLED_0in91(config.RaspberryPi):
+class OLED_0in91(RaspberryPi):
         
     """    Write register address and data     """
     def command(self, cmd):
@@ -47,8 +47,8 @@ class OLED_0in91(config.RaspberryPi):
         self.i2c_writebyte(0x40, data)
 
     def Init(self):  
-        if (self.module_init() != 0):
-            return -1
+        # if (self.module_init() != 0):
+        #     return -1
 
         self.width = OLED_WIDTH
         self.height = OLED_HEIGHT
@@ -59,7 +59,7 @@ class OLED_0in91(config.RaspberryPi):
             print ("Only Device_I2C, Please revise config.py !!!")
             exit()    
             
-        self.reset()
+        #self.reset()
         """Initialize dispaly"""      
         #print("initialize register bgin")
         self.command(0xAE)
