@@ -7,6 +7,7 @@ from core.enums import Emotion, Intensity,ServoConfig, Position
 import time
 
 from hw_drivers.legs.leg_movement import QuadrupedController
+from robot_hat import get_battery_voltage
 
 
 
@@ -146,5 +147,4 @@ def demo_body():
 
 if __name__ == "__main__":
     #demo_face()
-    
     indicator()

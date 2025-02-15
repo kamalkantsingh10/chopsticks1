@@ -150,7 +150,6 @@ class LCD_1inch69(lcdconfig.RaspberryPi):
         """Write display buffer to physical display"""
         imwidth, imheight = Image.size
         if imwidth == self.height and imheight ==  self.width:
-            print("Landscape screen")
             img = self.np.asarray(Image)
             pix = self.np.zeros((self.width, self.height,2), dtype = self.np.uint8)
             #RGB888 >> RGB565
@@ -165,7 +164,6 @@ class LCD_1inch69(lcdconfig.RaspberryPi):
             for i in range(0,len(pix),4096):
                 self.spi_writebyte(pix[i:i+4096])
         else :
-            print("Portrait screen")
             img = self.np.asarray(Image)
             pix = self.np.zeros((imheight,imwidth , 2), dtype = self.np.uint8)
             

@@ -12,6 +12,7 @@ class AudioController:
         self.tts = TTS(engine=TTS.ESPEAK)
         self.is_speaking = False
         self.current_request = None
+        set_volume(95)
         
         # Fixed emotional parameters for each emotion
         self.emotion_params = {
@@ -34,7 +35,7 @@ class AudioController:
         try:
             # Set volume based on intensity (0-100 scale)
             volume = int(50+ intensity.value/2 * 100)
-            set_volume(volume)
+            #set_volume(volume)
                         
             # Apply emotional parameters
             params = self.emotion_params[emotion]

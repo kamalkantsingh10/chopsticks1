@@ -79,7 +79,7 @@ def indicator():
             image1 = image1.rotate(0)
             disp.ShowImage(disp.getbuffer(image1))
             
-            time.sleep(30)
+            time.sleep(60)
 
     except KeyboardInterrupt:
         print("Program stopped by user")
