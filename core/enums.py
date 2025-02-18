@@ -11,15 +11,6 @@ class Intensity(Enum):
     NORMAL = 0.6
     INTENSE = 1.0
 
-class Mode(Enum):
-    PLAYFUL = "playful"
-    SLEEPY = "sleepy"
-    CURIOUS = "curious"
-    CLINGY = "clingy"
-    GUARD = "guard"
-    NORMAL = "normal"
-    SLEEP = "sleep"
-
 class Emotion(Enum):
     HAPPY = "happy"
     SAD = "sad"
@@ -32,6 +23,15 @@ class Emotion(Enum):
     SCARED = "scared"
     MISCHIEVOUS = "mischievous"
     NEUTRAL = "neutral"
+
+class Pose(Enum):
+    SIT_TALL= "sit-tall"
+    SIT_LOW="sit-low"
+    STAND="stand"
+    LIE_DOWN="lie-down"
+    BOW="bow"
+
+
 
 @dataclass
 class Position:

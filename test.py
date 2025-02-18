@@ -6,7 +6,7 @@ from controllers.indicator import indicator
 from core.enums import Emotion, Intensity,ServoConfig, Position
 import time
 
-from hw_drivers.legs.leg_movement import QuadrupedController
+from controllers.quadruped import QuadrupedController
 from robot_hat import get_battery_voltage
 
 
@@ -106,24 +106,30 @@ def demo_body():
     # print("Testing poses...")
     
     # # Stand
-    # print("Standing...")
-    # robot.move_to_pose('stand')
-    # time.sleep(1)
+    print("Standing...")
+    robot.move_to_pose('stand')
+    time.sleep(1)
     
     # # Sit
-    # print("Sitting...")
-    # robot.move_to_pose('bow')
-    # time.sleep(1)
+    print("Sitting...")
+    robot.move_to_pose('sit-tall')
+    time.sleep(1)
+
+      # # Sit
+    print("Sitting...")
+    robot.move_to_pose('sit-low')
+    time.sleep(1)
+    
     
     # # Lie down
-    # print("Lying down...")
-    # robot.move_to_pose('lie')
-    # time.sleep(1)
+    print("Lying down...")
+    robot.move_to_pose('lie')
+    time.sleep(1)
     
     # # Bow
-    # print("Bowing...")
-    # robot.move_to_pose('bow')
-    # time.sleep(1)
+    print("Bowing...")
+    robot.move_to_pose('bow')
+    #ime.sleep(1)
     
     # # Alert
     # print("Alert stance...")
@@ -131,13 +137,13 @@ def demo_body():
     # time.sleep(1)
     
     # # Back to stand
-    # print("Standing...")
-    # robot.move_to_pose('stand')
+    print("Standing...")
+    robot.move_to_pose('stand')
 
 
    
     robot.walk(
-    num_steps=8,
+    num_steps=2,
     step_height=20,
     step_length=50,
     neutral_height=40
@@ -147,4 +153,4 @@ def demo_body():
 
 if __name__ == "__main__":
     #demo_face()
-    indicator()
+    demo_body()

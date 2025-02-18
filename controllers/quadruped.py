@@ -24,7 +24,7 @@ POSES = {
         'back_right': (15, 5),
         'back_left': (15, 5)
     },
-    'lie': {
+    'lie-down': {
         'front_right': (-16, 10),
         'front_left': (-16, 10),
         'back_right': (-16, 10),

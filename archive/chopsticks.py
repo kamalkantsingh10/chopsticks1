@@ -1,45 +1,26 @@
 
 import time
+import socket
 from controllers.audio import AudioController
 from controllers.face import FaceController
 from controllers.head import HeadController
 from controllers.legs import LegController
 from controllers.tail import TailController
+from controllers.indicator import Indicator
 
-from emotions.engine import EmotionEngine
 
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 
-from emotions.enums import Emotion, Intensity,Position, ServoConfig
+from core.enums import Emotion, Intensity,Position, ServoConfig
 
 
 
-class RobotDog:
-    """
-    Main robot control class.
-    
-    Implementation Requirements:
-    1. Component lifecycle management
-    2. Configuration handling
-    3. Command processing
-    4. Error recovery
-    5. Performance monitoring
-    6. Background behaviors
-    7. Sleep mode management
-    
-    Setup:
-    1. Initialize all controllers
-    2. Load configurations
-    3. Start background tasks
-    4. Monitor system health
-    """
-    
+class ChopSticks:
+
     def __init__(self, config: Dict):
         self._init_components(config)
-        self.emotion_engine = EmotionEngine()
         self._running = True
-        self._start_background_tasks()
         
     def _init_components(self, config: Dict) -> None:
         """Initialize all hardware components"""
@@ -48,6 +29,7 @@ class RobotDog:
         self.display = FaceController(config["display_width"], config["display_height"])
         self.audio = AudioController(config["audio_device"])
         self.legs = LegController(config["leg_configs"])
+        self.indicator= I
     
     def _start_background_tasks(self) -> None:
         """Start background processing"""
@@ -62,6 +44,9 @@ class RobotDog:
             if action:
                 self._execute_action(action)
             time.sleep(0.1)
+
+
+    def route()
     
     def _execute_action(self, action: Dict) -> None:
         """Execute a single action across all components"""

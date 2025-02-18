@@ -15,25 +15,26 @@ def get_cpu_temp():
         print(f"Error reading temperature: {e}")
         return None
 
-def indicator():
-    try:
-        disp = OLED_0in91.OLED_0in91()
-        disp.Init()
+class  Indicator:
+    def __init__(self):
+        self.disp = OLED_0in91.OLED_0in91()
+        self.Init()
         
         font_path = '/home/kamal/projects/chopsticks1/hw_drivers/display/Font/Font00.ttf'
-        font1 = ImageFont.truetype(font_path, 18)
+        self.font1 = ImageFont.truetype(font_path, 18)
 
         # Segment settings
-        segments = 10  # Number of segments
-        segment_gap = 2  # Gap between segments
+        self.segments = 10  # Number of segments
+        self.segment_gap = 2  # Gap between segments
 
+    def start(self):
         while True:
             #disp.clear()
-            image1 = Image.new('1', (disp.width, disp.height), 0)
+            image1 = Image.new('1', (self.disp.width, self.disp.height), 0)
             draw = ImageDraw.Draw(image1)
 
             # Fill background white
-            draw.rectangle((0, 0, disp.width-1, disp.height-1), fill=1)
+            draw.rectangle((0, 0, self.disp.width-1, self.disp.height-1), fill=1)
 
             # Get sensor values
             battery_voltage = utils.get_battery_voltage()
@@ -45,21 +46,21 @@ def indicator():
             battery_percentage = min(100, max(0, ((battery_voltage - min_voltage) / (max_voltage - min_voltage)) * 100))
 
             # Battery bar dimensions (2/3 of screen width)
-            bar_width = int(disp.width * 2/3)
+            bar_width = int(self.disp.width * 2/3)
             
             # Draw battery outline
-            draw.rectangle((0, 0, bar_width, disp.height-1), fill=1, outline=0)
+            draw.rectangle((0, 0, bar_width, self.disp.height-1), fill=1, outline=0)
             
             # Calculate segment dimensions
-            segment_width = (bar_width - (segments + 1) * segment_gap) // segments
-            filled_segments = int((battery_percentage / 100) * segments)
+            segment_width = (bar_width - (self.segments + 1) * self.segment_gap) // self.segments
+            filled_segments = int((battery_percentage / 100) * self.segments)
 
             # Draw segments
-            for i in range(segments):
-                x1 = segment_gap + i * (segment_width + segment_gap)
+            for i in range(self.segments):
+                x1 = self.segment_gap + i * (segment_width + self.segment_gap)
                 x2 = x1 + segment_width
                 y1 = 2
-                y2 = disp.height 
+                y2 = self.disp.height 
                 
                 if i < filled_segments:
                     # Fill segment for battery level
@@ -69,26 +70,14 @@ def indicator():
             if temp is not None:
                 temp_text = f" {temp:.0f}C"
                 # Center text in remaining space
-                text_width = font1.getlength(temp_text)
-                text_x = bar_width + 8+((disp.width - bar_width) - text_width) // 2
-                text_y = (disp.height - 24) // 2
-                draw.text((text_x, text_y), temp_text, font=font1, fill=0)
+                text_width = self.font1.getlength(temp_text)
+                text_x = bar_width + 8+((self.disp.width - bar_width) - text_width) // 2
+                text_y = (self.disp.height - 24) // 2
+                draw.text((text_x, text_y), temp_text, font=self.font1, fill=0)
 
             # Ensure display is on and update
-            disp.command(0xAF)
+            self.disp.command(0xAF)
             image1 = image1.rotate(0)
-            disp.ShowImage(disp.getbuffer(image1))
+            self.disp.ShowImage(self.disp.getbuffer(image1))
             
             time.sleep(60)
-
-    except KeyboardInterrupt:
-        print("Program stopped by user")
-        disp.command(0xAE)
-        disp.clear()
-        sys.exit(0)
-    except Exception as e:
-        print(f"Error: {e}")
-        sys.exit(1)
-
-if __name__ == "__main__":
-    indicator()
