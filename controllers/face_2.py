@@ -112,9 +112,7 @@ class FaceController:
             'dx_left': 0,
             'dx_right': 0,
             'dy_left': 0,
-            'dy_right': 0,
-            'color_left': self.config.MAIN_COLOR,
-            'color_right': self.config.MAIN_COLOR
+            'dy_right': 0
         }
         
         # Configure shapes based on emotion
@@ -129,8 +127,6 @@ class FaceController:
         elif emotion == Emotion.EXCITED:
             shapes['left'] = 'star'
             shapes['right'] = 'star'
-            shapes['color_left'] = (220, 220, 220)  # white
-            shapes['color_right'] = (220, 220, 220)  # white
         elif emotion == Emotion.ALERT:
             shapes['left'] = 'circle'
             shapes['right'] = 'circle'
@@ -149,20 +145,9 @@ class FaceController:
         elif emotion == Emotion.LOVING:
             shapes['left'] = 'heart'
             shapes['right'] = 'heart'
-            shapes['color_left'] = (240,188,188)  # pink
-            shapes['color_right'] = (240,188,188)  # pink
         elif emotion == Emotion.GRUMPY:
-            # Orange angry eyes with the correct shape from the reference
-            shapes['left'] = 'orange_angry'
-            shapes['right'] = 'orange_angry'
-            # Adjust size and positioning to match reference
-            shapes['size_left'] = int(self.config.DOT_SIZE * 1.2)
-            shapes['size_right'] = int(self.config.DOT_SIZE * 1.2)
-            # Set orange color
-            shapes['color_left'] = (255, 99, 71)  # Orange
-            shapes['color_right'] = (255, 99, 71)  # Orange
-            shapes['dx_left'] = -10
-            shapes['dx_right'] = 10
+            shapes['left'] = 'x'
+            shapes['right'] = 'x'
         elif emotion == Emotion.SCARED:
             shapes['left'] = 'circle'
             shapes['right'] = 'circle'
@@ -187,7 +172,73 @@ class FaceController:
         draw.rectangle([x1 + radius, y1, x2 - radius, y2], fill=fill)
         draw.rectangle([x1, y1 + radius, x2, y2 - radius], fill=fill)
     
-    def draw_eye(self, draw, x_center, shape_type, size, dx=0, dy=0, color=None):
+def get_emotion_shapes(self, emotion):
+    """Get the shapes for both eyes based on the emotion"""
+    shapes = {
+        'left': 'rounded_rect',  # Default shape
+        'right': 'rounded_rect',  # Default shape
+        'size_left': self.config.DOT_SIZE,
+        'size_right': self.config.DOT_SIZE,
+        'dx_left': 0,
+        'dx_right': 0,
+        'dy_left': 0,
+        'dy_right': 0,
+        'color_left': self.config.MAIN_COLOR,
+        'color_right': self.config.MAIN_COLOR
+    }
+    
+    # Configure shapes based on emotion
+    if emotion == Emotion.NEUTRAL:
+        pass  # Use defaults
+    elif emotion == Emotion.HAPPY:
+        shapes['left'] = 'arc_up'
+        shapes['right'] = 'arc_up'
+    elif emotion == Emotion.SAD:
+        shapes['left'] = 'arc_down'
+        shapes['right'] = 'arc_down'
+    elif emotion == Emotion.EXCITED:
+        shapes['left'] = 'star'
+        shapes['right'] = 'star'
+    elif emotion == Emotion.ALERT:
+        shapes['left'] = 'circle'
+        shapes['right'] = 'circle'
+        shapes['size_left'] = int(self.config.DOT_SIZE * 1.2)
+        shapes['size_right'] = int(self.config.DOT_SIZE * 1.2)
+    elif emotion == Emotion.CURIOUS:
+        shapes['size_left'] = int(self.config.DOT_SIZE * 1.5)
+        shapes['size_right'] = int(self.config.DOT_SIZE * 0.8)
+        shapes['dx_left'] = -10
+        shapes['dx_right'] = 10
+    elif emotion == Emotion.SLEEPY:
+        shapes['left'] = 'zzz'
+        shapes['right'] = 'zzz'
+        shapes['dx_left'] = -15
+        shapes['dx_right'] = 15
+    elif emotion == Emotion.LOVING:
+        shapes['left'] = 'heart'
+        shapes['right'] = 'heart'
+    elif emotion == Emotion.GRUMPY:
+        # Orange angry eyes with the correct shape from the reference
+        shapes['left'] = 'orange_angry'
+        shapes['right'] = 'orange_angry'
+        # Adjust size and positioning to match reference
+        shapes['size_left'] = int(self.config.DOT_SIZE * 1.2)
+        shapes['size_right'] = int(self.config.DOT_SIZE * 1.2)
+        # Set orange color
+        shapes['color_left'] = (255, 140, 0)  # Orange
+        shapes['color_right'] = (255, 140, 0)  # Orange
+    elif emotion == Emotion.SCARED:
+        shapes['left'] = 'circle'
+        shapes['right'] = 'circle'
+        shapes['size_left'] = int(self.config.DOT_SIZE * 0.5)
+        shapes['size_right'] = int(self.config.DOT_SIZE * 0.5)
+    elif emotion == Emotion.MISCHIEVOUS:
+        shapes['right'] = 'line_horizontal'
+    
+    return shapes
+
+# Also need to add the angry_eye drawing function to draw_eye method:
+    def draw_eye(self, draw, x_center, shape_type, size, dx=0, dy=0):
         """Draw a single eye with the specified shape"""
         # Calculate coordinates
         center_y = self.config.HEIGHT // 2
@@ -199,9 +250,7 @@ class FaceController:
         x2 = int(x_pos + size // 2)
         y2 = int(y_pos + size // 2)
         
-        # Use provided color or default
-        if color is None:
-            color = self.config.MAIN_COLOR
+        color = self.config.MAIN_COLOR
         
         # Draw different shape based on if blinking
         if self.is_blinking:
@@ -244,37 +293,38 @@ class FaceController:
                 draw.line([int(x1), int(y1), int(x2), int(y2)], fill=color, width=line_thickness)
                 draw.line([int(x2), int(y1), int(x1), int(y2)], fill=color, width=line_thickness)
             
-            elif shape_type == 'orange_angry':
-                # Create orange angry eyes based on the reference image
-                # These are triangular/diagonal shapes with gradient-like stripes
+            elif shape_type == 'angry_eye':
+                # Create angry eye shape resembling the reference image
+                # Angry eyes are angled, narrowed eyes
                 
-                # Draw the main triangular shape
+                # Calculate points for angled shape
                 width = x2 - x1
                 height = y2 - y1
                 
-                # Create a triangle pointing toward the center
-                is_left = x_pos < self.config.WIDTH // 2
+                # Make the angry eye with an angled top
+                points = [
+                    (x1, y1 + height * 0.3),  # Top left, slightly lower
+                    (x1 + width * 0.3, y1),   # Left part of top edge
+                    (x2 - width * 0.3, y1),   # Right part of top edge
+                    (x2, y1 + height * 0.3),  # Top right, slightly lower
+                    (x2, y2),                 # Bottom right
+                    (x1, y2)                  # Bottom left
+                ]
                 
-                if is_left:
-                    # Left eye - triangle pointing right
-                    points = [
-                        (x1, y1),             # Top left
-                        (x1, y2),             # Bottom left
-                        (x2, (y1 + y2) // 1.5)  # Middle right (point)
-                    ]
-                else:
-                    # Right eye - triangle pointing left
-                    points = [
-                        (x2, y1),             # Top right
-                        (x2, y2),             # Bottom right
-                        (x1, (y1 + y2) // 1.5)  # Middle left (point)
-                    ]
-                
-                # Draw the main orange shape
+                # Draw the angry eye shape
                 draw.polygon(points, fill=color)
                 
+                # Add a slight brightness/highlight to the center (like in the reference image)
+                highlight_size = size // 3
+                highlight_x1 = x_pos - highlight_size // 2
+                highlight_y1 = y_pos - highlight_size // 2
+                highlight_x2 = x_pos + highlight_size // 2
+                highlight_y2 = y_pos + highlight_size // 2
                 
-                
+                # Create a brighter version of the main color for the highlight
+                highlight_color = tuple(min(255, c + 50) for c in color)
+                draw.ellipse([highlight_x1, highlight_y1, highlight_x2, highlight_y2], fill=highlight_color)
+            
             elif shape_type == 'heart':
                 # Heart shape
                 heart_width = int(size * 0.9)
@@ -312,7 +362,7 @@ class FaceController:
                     x = int(cx + radius * math.cos(angle))
                     y = int(cy + radius * math.sin(angle))
                     points.append((x, y))
-                color
+                
                 draw.polygon(points, fill=color)
             
             elif shape_type == 'zzz':
@@ -339,7 +389,7 @@ class FaceController:
                     draw.line([z_points[0], z_points[1]], fill=color, width=line_width)
                     draw.line([z_points[1], z_points[2]], fill=color, width=line_width)
                     draw.line([z_points[2], z_points[3]], fill=color, width=line_width)
-    
+        
     def update_display(self):
         """Update the display with the current emotion"""
         try:
@@ -361,8 +411,7 @@ class FaceController:
                 shapes['left'],
                 shapes['size_left'],
                 shapes['dx_left'],
-                shapes['dy_left'],
-                shapes['color_left']
+                shapes['dy_left']
             )
             
             self.draw_eye(
@@ -371,8 +420,7 @@ class FaceController:
                 shapes['right'],
                 shapes['size_right'],
                 shapes['dx_right'],
-                shapes['dy_right'],
-                shapes['color_right']
+                shapes['dy_right']
             )
             
             # Display the image

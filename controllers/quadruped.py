@@ -19,8 +19,8 @@ POSES = {
         'back_left': (15, 26)
     },
     'sit-low': {
-        'front_right':(15, 5),
-        'front_left': (15, 5),
+        'front_right': (0, 40),     # 10mm forward from center
+        'front_left': (0, 40),
         'back_right': (15, 5),
         'back_left': (15, 5)
     },
@@ -50,7 +50,7 @@ class QuadrupedController:
             'back_right': QuadrupedLeg_right(9, 10)    # Right back servos (9,10)
         }
         
-    def move_to_pose(self, pose_name, transition_time=1.0):
+    def move_to_pose(self, pose_name, transition_time=.5):
         """Move to a predefined pose with smooth interpolation"""
         if pose_name not in POSES:
             print(f"Unknown pose: {pose_name}")
@@ -90,7 +90,7 @@ class QuadrupedController:
             # Small delay between steps
             time.sleep(transition_time / steps)
             
-    def walk(self, num_steps, step_height=20, step_length=20, neutral_height=50):
+    def walk(self, num_steps, step_height=10, step_length=20, neutral_height=35):
         """
         Walking gait implementation with consistent x-direction
         step_height: Height of leg lift during step

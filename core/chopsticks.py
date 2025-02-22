@@ -32,7 +32,7 @@ class Chopsticks:
         
         #instantiate contoller now
         self.quadruped = QuadrupedController()
-
+        print("legs set")
         #instantiating head- will move to a conf file.. but now keep it as is
         pan_config = ServoConfig(
         pin=2,
@@ -50,8 +50,23 @@ class Chopsticks:
     
     # Initialize head controller
         self.head = HeadController(pan_config, tilt_config)
+        print("head configured")
         #initialize audio
         self.voice = AudioController()
+        print("speaker set")
+        self.face =FaceController()
+        self.face.start()
+        print("face screen set")
+        tail_config = ServoConfig(
+            pin=1,
+            min_angle=-30,
+            max_angle=30,
+            default_speed=1.0
+        )
+        print("tail set")
+        self.tail = TailController(tail_config)
+        self.indicator= Indicator()
+        print("indicator set")
 
     def start(self):
         print("starting server now and starting to listen")
@@ -67,6 +82,7 @@ class Chopsticks:
     def route(self, command_dict):
         p1= command_dict.get("p1")
         p2= command_dict.get("p2")
+        p3= command_dict.get("p3")
 
         if p1=="pose":
             self.assume_pose(p2)
@@ -74,35 +90,99 @@ class Chopsticks:
             self.say_yes_no(p2)
         elif p1=="say":
             self.say(p2)
+        elif p1=="walk":
+            self.walk(num_steps=p2, direction=p3)
+        elif p1=="dance":
+            self.dance()
+        elif p1=="emotions":
+            self.show_emotion(emotion=p2)
         else:
             print("Invalid please")
 
-    def walk(self):
-        pass
+    def show_emotion(self, emotion):
+        display_emotion= f" Chopsticks {emotion}"
+        print (f"moving : {self.tail.is_moving}    emergency stop:{self.tail.emergency_stop}")
+        if emotion==Emotion.HAPPY.value:
+            self.tail.set_emotion(Emotion.HAPPY)
+            self.face.set_emotion(Emotion.HAPPY)
+        elif emotion==Emotion.SAD.value:
+            self.tail.set_emotion(Emotion.SAD)
+            self.face.set_emotion(Emotion.SAD)
+        elif emotion==Emotion.EXCITED.value:
+            self.tail.set_emotion(Emotion.EXCITED)
+            self.face.set_emotion(Emotion.EXCITED)
+        elif emotion==Emotion.CURIOUS.value:
+            self.tail.set_emotion(Emotion.CURIOUS)
+            self.face.set_emotion(Emotion.CURIOUS)
+        elif emotion==Emotion.SLEEPY.value:
+            self.tail.set_emotion(Emotion.SLEEPY)
+            self.face.set_emotion(Emotion.SLEEPY)
+        elif emotion==Emotion.LOVING.value:
+            self.tail.set_emotion(Emotion.LOVING)
+            self.face.set_emotion(Emotion.LOVING)
+        elif emotion==Emotion.GRUMPY.value:
+            self.tail.set_emotion(Emotion.GRUMPY)
+            self.face.set_emotion(Emotion.GRUMPY)
+        elif emotion==Emotion.SCARED.value:
+            self.tail.set_emotion(Emotion.SCARED)
+            self.face.set_emotion(Emotion.SCARED)
+        elif emotion==Emotion.MISCHIEVOUS.value:
+            self.tail.set_emotion(Emotion.MISCHIEVOUS)
+            self.face.set_emotion(Emotion.MISCHIEVOUS)
+        elif emotion==Emotion.NEUTRAL.value:
+            self.tail.set_emotion(Emotion.NEUTRAL)
+            self.face.set_emotion(Emotion.NEUTRAL)
+            display_emotion= f" I am Chopsticks"
+        else:
+            self.tail.set_emotion(Emotion.NEUTRAL)
+            self.face.set_emotion(Emotion.NEUTRAL)
+            display_emotion= f" I am Chopsticks"
+        print (display_emotion)
+        #self.indicator.display_text(display_emotion)
+
+        
+
+        
+        
+
+
+    def walk(self, num_steps,direction):
+        self.indicator.display_text("walking")
+        length=0
+        if direction=="front":
+            length=30
+        elif direction=="back":
+            length=-20
+        self.quadruped.walk(num_steps=int(num_steps), step_length=length)
+
+    def dance(self):
+        self.quadruped.walk(num_steps=8, step_length=0) # bot dances at same place with 0 step length
 
     def assume_pose(self, pose):
         #pose is managed though head tilt and body positions
-        if pose== Pose.SIT_TALL:
+        self.indicator.display_text(pose)
+        if pose== Pose.SIT_TALL.value:
             self.quadruped.move_to_pose(pose)
             self.head.set_base_tilt(tilt_angle= 20)
             self.state["neck_tilt"]=20
             self.state["pose"]=pose
-        elif pose== Pose.SIT_LOW:
+        elif pose== Pose.SIT_LOW.value:
             self.quadruped.move_to_pose(pose)
             self.head.set_base_tilt(tilt_angle= -30)
             self.state["neck_tilt"]=-30
             self.state["pose"]=pose
-        elif pose== Pose.STAND:
+        elif pose== Pose.STAND.value:
             self.quadruped.move_to_pose(pose)
             self.head.set_base_tilt(tilt_angle= -10)
             self.state["neck_tilt"]=-10
             self.state["pose"]=pose
-        elif pose== Pose.LIE_DOWN:
+        elif pose== Pose.LIE_DOWN.value:
             self.quadruped.move_to_pose(pose)
-            self.head.set_base_tilt(tilt_angle= -20)
-            self.state["neck_tilt"]=-20
+            self.head.set_base_tilt(tilt_angle= 30)
+            self.state["neck_tilt"]=30
             self.state["pose"]=pose
-        elif pose== Pose.BOW:
+            self.tail.stop()
+        elif pose== Pose.BOW.value:
             self.quadruped.move_to_pose(pose)
             self.head.set_base_tilt(tilt_angle= 10)
             self.state["neck_tilt"]=10
@@ -112,6 +192,7 @@ class Chopsticks:
         
 
     def say_yes_no(self, expression):
+        self.indicator.display_text("yes")
         if expression=="yes":
             self.head.nod_yes(base_tilt=self.state["neck_tilt"] )
         elif  expression=="no":
@@ -119,8 +200,6 @@ class Chopsticks:
         else:
             print("invalid expression")
 
-    def show_emotion(self):
-        pass
-
-    def say(text):
+    
+    def say(self, text):
         self.voice.speak(text, Emotion.HAPPY, Intensity.NORMAL)
