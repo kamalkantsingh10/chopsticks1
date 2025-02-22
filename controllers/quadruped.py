@@ -3,26 +3,27 @@ import time
 import math
 import numpy as np
 from hw_drivers.legs.inverse_kinematics import QuadrupedLeg_right, QuadrupedLeg_left
-
+from core.enums import Emotion, Pose
+from emotions.quadruped import EmotionalBehaviors  # Import the new class
 
 POSES = {
     'stand': {
-        'front_right': (0, 40),     # 10mm forward from center
-        'front_left': (0, 40),      # 10mm forward from center
-        'back_right': (0, 40),
-        'back_left': (0, 40)
+        'front_right': (0, 38),     # 10mm forward from center
+        'front_left': (0, 38),      # 10mm forward from center
+        'back_right': (0, 38),
+        'back_left': (0, 38)
     },
     'sit-tall': {
-        'front_right': (-40, 70),
-        'front_left': (-40, 70),
-        'back_right': (15, 26),
-        'back_left': (15, 26)
+        'front_right': (-45, 70),
+        'front_left': (-45, 70),
+        'back_right': (-25, 5),
+        'back_left': (-25, 5)
     },
     'sit-low': {
-        'front_right': (0, 40),     # 10mm forward from center
-        'front_left': (0, 40),
-        'back_right': (15, 5),
-        'back_left': (15, 5)
+        'front_right': (0, 50),     # 10mm forward from center
+        'front_left': (0, 50),
+        'back_right': (-13, 10),
+        'back_left': (-13, 10)
     },
     'lie-down': {
         'front_right': (-16, 10),
@@ -36,7 +37,6 @@ POSES = {
         'back_right': (0, 55),
         'back_left': (0, 55)
     }
-
 }
 
 
@@ -49,6 +49,10 @@ class QuadrupedController:
             'back_left': QuadrupedLeg_left(8, 11),    # Left back servos (8,11)
             'back_right': QuadrupedLeg_right(9, 10)    # Right back servos (9,10)
         }
+        self.current_pose = Pose.SIT_LOW.value
+        
+        # Initialize emotional behaviors
+        self.emotions = EmotionalBehaviors(self)
         
     def move_to_pose(self, pose_name, transition_time=.5):
         """Move to a predefined pose with smooth interpolation"""
@@ -89,6 +93,9 @@ class QuadrupedController:
             
             # Small delay between steps
             time.sleep(transition_time / steps)
+        
+        # Update current pose
+        self.current_pose = pose_name
             
     def walk(self, num_steps, step_height=10, step_length=20, neutral_height=35):
         """
@@ -97,6 +104,9 @@ class QuadrupedController:
         step_length: Length of each step
         neutral_height: Default standing height
         """
+
+        print("Standing up first")
+        self.move_to_pose(Pose.STAND.value, transition_time=0.5)
         print(f"Walking {num_steps} steps...")
         
         # Initialize phase
@@ -174,85 +184,16 @@ class QuadrupedController:
         
         # Return to neutral standing position
         print("Returning to stand...")
-        self.move_to_pose('stand', transition_time=1.0)
-
+        self.move_to_pose(self.current_pose, transition_time=0.5)
     
-    def walk_round(self, num_steps, radius=40, step_height=20, neutral_height=50):
-        """
-        Walking in a circular pattern
-        radius: Radius of the circular path (mm)
-        step_height: Height of leg lift during step
-        neutral_height: Default standing height
-        """
-        print(f"Walking {num_steps} steps in a circle...")
+    def express_emotion(self, emotion):
+        """Express an emotion using the emotional behaviors module"""
+        # Make sure we're in a standing position first
+        if self.current_pose != Pose.STAND.value:
+            self.move_to_pose(Pose.STAND.value, transition_time=0.5)
         
-        phase = 0
-        step_count = 0
-        step_angle = 2 * math.pi / (num_steps * 20)  # Divide circle into small increments
-        current_angle = 0
+        # Delegate to the emotions controller to take the stance
+        self.emotions.express_emotion(emotion)
         
-        while step_count < num_steps:
-            # Calculate positions for each leg based on phase and current angle
-            if phase < 0.5:  # First diagonal pair stance phase
-                # Calculate base positions as in normal walk
-                rf_base = (radius/2 - phase*radius, neutral_height)
-                lb_base = (radius/2 - phase*radius, neutral_height)
-                
-                lf_phase = phase * 2
-                lf_base = (-radius/2 + lf_phase*radius, 
-                          neutral_height - step_height * math.sin(lf_phase * math.pi))
-                
-                rb_phase = phase * 2
-                rb_base = (-radius/2 + rb_phase*radius,
-                          neutral_height - step_height * math.sin(rb_phase * math.pi))
-                
-            else:  # Second diagonal pair stance phase
-                alt_phase = phase - 0.5
-                
-                rf_phase = alt_phase * 2
-                rf_base = (-radius/2 + rf_phase*radius,
-                          neutral_height - step_height * math.sin(rf_phase * math.pi))
-                
-                lb_phase = alt_phase * 2
-                lb_base = (-radius/2 + lb_phase*radius,
-                          neutral_height - step_height * math.sin(lb_phase * math.pi))
-                
-                lf_base = (radius/2 - alt_phase*radius, neutral_height)
-                rb_base = (radius/2 - alt_phase*radius, neutral_height)
-            
-            # Rotate positions around circle
-            positions = {
-                'front_right': (
-                    rf_base[0] * math.cos(current_angle) - radius * math.sin(current_angle),
-                    rf_base[1]
-                ),
-                'front_left': (
-                    lf_base[0] * math.cos(current_angle) - radius * math.sin(current_angle),
-                    lf_base[1]
-                ),
-                'back_right': (
-                    rb_base[0] * math.cos(current_angle) + radius * math.sin(current_angle),
-                    rb_base[1]
-                ),
-                'back_left': (
-                    lb_base[0] * math.cos(current_angle) + radius * math.sin(current_angle),
-                    lb_base[1]
-                )
-            }
-            
-            # Move each leg
-            for leg_name, pos in positions.items():
-                self.legs[leg_name].move(*pos)
-            
-            time.sleep(0.02)
-            
-            # Update phase and angle
-            phase = (phase + 0.05) % 1.0
-            current_angle = (current_angle + step_angle) % (2 * math.pi)
-            
-            if phase < 0.05:
-                step_count += 1
-                print(f"Step {step_count}/{num_steps}")
-        
-        print("Returning to stand...")
-        self.move_to_pose('stand', transition_time=1.0)
+        # Update current pose - still technically in a modified stand
+        self.current_pose = Pose.STAND.value

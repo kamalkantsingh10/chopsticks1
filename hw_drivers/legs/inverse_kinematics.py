@@ -52,7 +52,6 @@ class FiveBarLinkage:
 
     def move_to(self, x, y):
         angles = self.solve_ik(x, y)
-        print(f"Target: ({x}, {y}), Angles: {angles}")
         if angles[0] is not None and angles[1] is not None:
             self.servo_a.angle(angles[0])
             self.servo_b.angle(angles[1])

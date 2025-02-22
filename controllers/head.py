@@ -152,7 +152,7 @@ class HeadController:
             )
             
         # Gentle return to original position
-        self.move_to(Position(self.current_position.x, current_tilt), 0.8)
+        self.move_to(Position(self.current_position.x, current_tilt), 0.3)
         
     def shake_no(self, cycles: int = 2, intensity: Intensity = Intensity.NORMAL) -> None:
         """
@@ -187,4 +187,4 @@ class HeadController:
         # Gentle return to center with slight overshoot
         self.move_to(Position(-pan_amount * 0.2, original_position.y), 1.0)
         time.sleep(0.1)
-        self.move_to(original_position, 0.7)
+        self.move_to(original_position, 0.3)
