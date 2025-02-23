@@ -70,6 +70,8 @@ class TailController:
         elif emotion == Emotion.NEUTRAL:
             # No movement, neutral position
             self.set_angle(0.0, 0.5)
+
+        print (f"tail--> set {emotion.value}")
     
     def wag(self, speed: float, amplitude: float, intensity: Intensity) -> None:
         """

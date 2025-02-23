@@ -6,7 +6,7 @@ from controllers.head import HeadController
 from controllers.quadruped import QuadrupedController
 from controllers.tail import TailController
 from controllers.indicator import Indicator
-
+from emotions.head import Head_Emotions
 
 from typing import Dict, List, Optional
 from dataclasses import dataclass
@@ -50,6 +50,7 @@ class Chopsticks:
     
     # Initialize head controller
         self.head = HeadController(pan_config, tilt_config)
+        self.head_em = Head_Emotions(self.head)
         print("head configured")
         #initialize audio
         self.voice = AudioController()
@@ -100,47 +101,43 @@ class Chopsticks:
             print("Invalid please")
 
     def show_emotion(self, emotion):
-        display_emotion= f" Chopsticks {emotion}"
-        print (f"moving : {self.tail.is_moving}    emergency stop:{self.tail.emergency_stop}")
+        display_emotion= f"{emotion}"
+        self.tail.stop()
+        emotion_to_show= Emotion.NEUTRAL
         if emotion==Emotion.HAPPY.value:
-            self.tail.set_emotion(Emotion.HAPPY)
-            self.face.set_emotion(Emotion.HAPPY)
+            emotion_to_show= Emotion.HAPPY
         elif emotion==Emotion.SAD.value:
-            self.tail.set_emotion(Emotion.SAD)
-            self.face.set_emotion(Emotion.SAD)
+            emotion_to_show= Emotion.SAD
         elif emotion==Emotion.EXCITED.value:
-            self.tail.set_emotion(Emotion.EXCITED)
-            self.face.set_emotion(Emotion.EXCITED)
+            emotion_to_show= Emotion.EXCITED
         elif emotion==Emotion.CURIOUS.value:
-            self.tail.set_emotion(Emotion.CURIOUS)
-            self.face.set_emotion(Emotion.CURIOUS)
+            emotion_to_show= Emotion.CURIOUS
         elif emotion==Emotion.SLEEPY.value:
-            self.tail.set_emotion(Emotion.SLEEPY)
-            self.face.set_emotion(Emotion.SLEEPY)
+            emotion_to_show= Emotion.SLEEPY 
         elif emotion==Emotion.LOVING.value:
-            self.tail.set_emotion(Emotion.LOVING)
-            self.face.set_emotion(Emotion.LOVING)
+            emotion_to_show= Emotion.LOVING
         elif emotion==Emotion.GRUMPY.value:
-            self.tail.set_emotion(Emotion.GRUMPY)
-            self.face.set_emotion(Emotion.GRUMPY)
+            emotion_to_show= Emotion.GRUMPY
         elif emotion==Emotion.SCARED.value:
-            self.tail.set_emotion(Emotion.SCARED)
-            self.face.set_emotion(Emotion.SCARED)
+            emotion_to_show= Emotion.SCARED
         elif emotion==Emotion.MISCHIEVOUS.value:
-            self.tail.set_emotion(Emotion.MISCHIEVOUS)
-            self.face.set_emotion(Emotion.MISCHIEVOUS)
+            emotion_to_show= Emotion.MISCHIEVOUS
         elif emotion==Emotion.NEUTRAL.value:
-            self.tail.set_emotion(Emotion.NEUTRAL)
-            self.face.set_emotion(Emotion.NEUTRAL)
-            display_emotion= f" I am Chopsticks"
+            emotion_to_show= Emotion.NEUTRAL
+            display_emotion= f"Chopsticks"
         else:
-            self.tail.set_emotion(Emotion.NEUTRAL)
-            self.face.set_emotion(Emotion.NEUTRAL)
-            display_emotion= f" I am Chopsticks"
-        print (display_emotion)
-        #self.indicator.display_text(display_emotion)
+            emotion_to_show= Emotion.NEUTRAL
+            display_emotion= f"Chopsticks"
 
-        
+        self.head_em.express(emotion_to_show)
+        self.tail.set_emotion(emotion_to_show)
+        self.face.set_emotion(emotion_to_show)
+        self.quadruped.express_emotion(emotion_to_show)
+   
+        self.indicator.display_text(display_emotion)
+
+
+   
 
         
         

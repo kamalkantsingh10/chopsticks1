@@ -21,32 +21,32 @@ class EmotionalBehaviors:
         """
         # Start from stand position if needed
         if self.controller.current_pose != "stand":
-            self.controller.move_to_pose("stand", transition_time=0.5)
+            return
         
         print(f"Expressing emotion: {emotion}")
         
         # Call the appropriate emotion method
-        if emotion == Emotion.HAPPY.value:
+        if emotion == Emotion.HAPPY:
             self._happy()
-        elif emotion == Emotion.SAD.value:
+        elif emotion == Emotion.SAD:
             self._sad()
-        elif emotion == Emotion.EXCITED.value:
+        elif emotion == Emotion.EXCITED:
             self._excited()
-        elif emotion == Emotion.ALERT.value:
+        elif emotion == Emotion.ALERT:
             self._alert()
-        elif emotion == Emotion.CURIOUS.value:
+        elif emotion == Emotion.CURIOUS:
             self._curious()
-        elif emotion == Emotion.SLEEPY.value:
+        elif emotion == Emotion.SLEEPY:
             self._sleepy()
-        elif emotion == Emotion.LOVING.value:
+        elif emotion == Emotion.LOVING:
             self._loving()
-        elif emotion == Emotion.GRUMPY.value:
+        elif emotion == Emotion.GRUMPY:
             self._grumpy()
-        elif emotion == Emotion.SCARED.value:
+        elif emotion == Emotion.SCARED:
             self._scared()
-        elif emotion == Emotion.MISCHIEVOUS.value:
+        elif emotion == Emotion.MISCHIEVOUS:
             self._mischievous()
-        elif emotion == Emotion.NEUTRAL.value:
+        elif emotion == Emotion.NEUTRAL:
             self._neutral()
         else:
             print(f"Unknown emotion: {emotion}")

@@ -9,7 +9,7 @@ class Indicator:
         self.disp = OLED_0in91.OLED_0in91()
         self.disp.Init()
         font_path = '/home/kamal/projects/chopsticks1/hw_drivers/display/Font/Font00.ttf'
-        self.font1 = ImageFont.truetype(font_path, 17)
+        self.font1 = ImageFont.truetype(font_path, 15)
         # Turn on display
         self.disp.command(0xAF)
         self.display_text("Chopsticks 1.0")

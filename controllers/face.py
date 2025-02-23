@@ -26,7 +26,7 @@ class DisplayConfig:
     DOT_SIZE = 70
     DOT_SPACING = 90
     MAIN_COLOR = (50, 255, 50)  # Light green
-    BACKGROUND_COLOR = (10, 12, 15)  # Very dark blue-gray
+    BACKGROUND_COLOR = (0, 0, 0)  # Very black
 
 
 class FaceController:
@@ -149,8 +149,8 @@ class FaceController:
         elif emotion == Emotion.LOVING:
             shapes['left'] = 'heart'
             shapes['right'] = 'heart'
-            shapes['color_left'] = (240,188,188)  # pink
-            shapes['color_right'] = (240,188,188)  # pink
+            shapes['color_left'] = (240,80,80)  # pink
+            shapes['color_right'] = (240,80,80)  # pink
         elif emotion == Emotion.GRUMPY:
             # Orange angry eyes with the correct shape from the reference
             shapes['left'] = 'orange_angry'
@@ -277,26 +277,61 @@ class FaceController:
                 
             elif shape_type == 'heart':
                 # Heart shape
-                heart_width = int(size * 0.9)
-                heart_height = int(size * 0.9)
-                
-                # Center point and dimensions
+                 # Scale and center point
+                scale = size / 100
                 cx, cy = x_pos, y_pos
-                hw, hh = heart_width // 2, heart_height // 2
                 
-                # Heart shape points
-                points = [
-                    (cx, cy - hh//2),  # Top center dip
-                    (cx - hw//4, cy - hh),  # Upper left curve
-                    (cx - hw, cy - hh//3),  # Left bump top
-                    (cx - hw, cy),  # Left side mid-point
-                    (cx, cy + hh),  # Bottom point
-                    (cx + hw, cy),  # Right side mid-point
-                    (cx + hw, cy - hh//3),  # Right bump top
-                    (cx + hw//4, cy - hh),  # Upper right curve
-                    (cx, cy - hh//2),  # Back to top center
+                # Define heart points relative to center (normalized to 0-100 range)
+                relative_points = [
+                    (0, -15),    # Top center
+                    (-5, -20),   # Top left curve
+                    (-10, -25),
+                    (-20, -30),
+                    (-25, -31),
+                    (-30, -31),
+                    (-35, -30),
+                    (-40, -28),
+                    (-43, -25),
+                    (-45, -20),
+                    (-46, -15),
+                    (-45, -10),
+                    (-43, -5),
+                    (-40, 0),    # Left mid
+                    (-35, 5),
+                    (-30, 10),
+                    (-25, 15),
+                    (-20, 20),
+                    (-15, 25),
+                    (-10, 30),
+                    (-5, 35),
+                    (0, 40),     # Bottom point
+                    (5, 35),
+                    (10, 30),
+                    (15, 25),
+                    (20, 20),
+                    (25, 15),
+                    (30, 10),
+                    (35, 5),
+                    (40, 0),     # Right mid
+                    (43, -5),
+                    (45, -10),
+                    (46, -15),
+                    (45, -20),
+                    (43, -25),
+                    (40, -28),
+                    (35, -30),
+                    (30, -31),
+                    (25, -31),
+                    (20, -30),
+                    (15, -28),
+                    (10, -25),
+                    (5, -20),
                 ]
                 
+                # Convert relative points to absolute positions
+                points = [(cx + x * scale, cy + y * scale) for x, y in relative_points]
+                
+                # Draw the polygon
                 draw.polygon(points, fill=color)
             
             elif shape_type == 'star':
@@ -377,7 +412,7 @@ class FaceController:
             
             # Display the image
             self.disp.ShowImage(image)
-            print(f"Display updated: Emotion={self.current_emotion.name}, Blinking={self.is_blinking}")
+            #print(f"Display updated: Emotion={self.current_emotion.name}, Blinking={self.is_blinking}")
             
         except Exception as e:
             print(f"Error updating display: {e}")

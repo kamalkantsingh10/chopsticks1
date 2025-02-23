@@ -113,33 +113,24 @@ class Head_Emotions:
         Express happiness through gentle nodding and slight upward tilt
         """
         # Slightly upward tilt for happy expression
-        base_position = Position(0, -5)  # Milder upward tilt
+        base_position = Position(0, -8)
         
         if is_continuation:
-            # Even milder for continuation
             self.head.move_to(base_position, 0.8)
             time.sleep(0.1)
             
-            # Choose between a small nod or a small sideways movement
             if random.choice([True, False]):
-                # Small nod
-                self.head.move_to(Position(random.uniform(-3, 3), base_position.y + 3), 0.7)
+                self.head.move_to(Position(random.uniform(-5, 5), base_position.y + 6), 0.7)
                 time.sleep(0.1)
                 self.head.move_to(base_position, 0.6)
             else:
-                # Small sideways movement
-                self.head.move_to(Position(4, base_position.y - 2), 0.7)
+                self.head.move_to(Position(7, base_position.y - 12), 0.7)
                 time.sleep(0.1)
                 self.head.move_to(base_position, 0.6)
         else:
-            # Initial expression
             self.head.move_to(base_position, 0.9)
             time.sleep(0.2)
-            
-            # Perform gentle nod
             self.head.nod_yes(cycles=1, base_tilt=base_position.y)
-            
-            # Small sideways movement at the end
             self.head.move_to(Position(5, base_position.y - 3), 0.8)
             time.sleep(0.1)
             self.head.move_to(base_position, 0.7)
@@ -149,32 +140,26 @@ class Head_Emotions:
         Express sadness through downward tilt and slow, minimal movement
         """
         # Downward tilt for sad expression - milder
-        tilt_value = 15
+        tilt_value = 18  # Increased tilt
         
         if is_continuation:
-            # Even milder for continuation
-            # Small, slow movement with a slight droop
-            self.head.move_to(Position(random.uniform(-3, 3), tilt_value), 0.4)
+            current_pos = self.head.current_position
+            self.head.move_to(Position(random.uniform(-4, 4), tilt_value), 0.8)
             time.sleep(0.2)
-            # Slight additional droop
-            self.head.move_to(Position(random.uniform(-2, 2), tilt_value + 2), 0.3)
-            time.sleep(0.2)
+            self.head.move_to(Position(random.uniform(-3, 3), tilt_value + 4), 0.6)
+            time.sleep(0.3)
         else:
-            # Initial expression
-            # Slow, deliberate movement down
-            self.head.move_to(Position(0, tilt_value), 0.5)
+            self.head.move_to(Position(0, tilt_value), 1)
             time.sleep(0.3)
             
-            # Slight side-to-side movement, as if hesitant
-            self.head.move_to(Position(-3, tilt_value + 1), 0.4)
+            self.head.move_to(Position(-4, tilt_value + 2), 0.8)
             time.sleep(0.3)
-            self.head.move_to(Position(3, tilt_value + 2), 0.4)
+            self.head.move_to(Position(4, tilt_value + 3), 0.8)
             time.sleep(0.3)
-                
-            # Slight nod at the end, as if accepting sadness
-            self.head.move_to(Position(0, tilt_value + 3), 0.3)
+            
+            self.head.move_to(Position(0, tilt_value + 4), 0.6)
             time.sleep(0.2)
-            self.head.move_to(Position(0, tilt_value), 0.3)
+            self.head.move_to(Position(0, tilt_value), 0.6)
     
     def _express_excited(self, is_continuation: bool) -> None:
         """
@@ -188,7 +173,7 @@ class Head_Emotions:
             # Quick but small side-to-side movement
             pan = random.choice([-8, 8])
             self.head.move_to(Position(pan, base_tilt + random.uniform(-2, 2)), 1.2)
-            time.sleep(0.1)
+            time.sleep(0.8)
             self.head.move_to(Position(0, base_tilt), 1.0)
         else:
             # Initial expression
@@ -289,64 +274,58 @@ class Head_Emotions:
         Express sleepiness through drooping head and slow movements
         """
         # Milder drooping head position
-        droop = 12
+        droop = 15  # Increased droop
         
         if is_continuation:
-            # For continuation, just do a single sleepy nod
             current_pos = self.head.current_position
-            # Slowly droop a bit more
-            self.head.move_to(Position(current_pos.x, droop + 3), 0.3)
-            time.sleep(0.4)
-            # Slow recovery
-            self.head.move_to(Position(current_pos.x, droop), 0.4)
+            # Gentler droop motion with slower speed
+            self.head.move_to(Position(current_pos.x, droop + 3), 0.7)  # Increased from 0.4 to 0.7
+            time.sleep(0.6)  # Increased from 0.4 to 0.6
+            
+            # Very subtle side movement, slower
+            self.head.move_to(Position(current_pos.x + random.uniform(-2, 2), droop + 2), 0.7)  # Increased from 0.4 to 0.7
+            time.sleep(0.5)  # Increased from 0.3 to 0.5
+            self.head.move_to(Position(current_pos.x, droop), 0.8)  # Increased from 0.5 to 0.8
         else:
-            # Initial expression
-            # Slowly droop head downward
-            self.head.move_to(Position(0, droop), 0.4)
-            time.sleep(0.5)
+            # Initial gentle droop, slower
+            self.head.move_to(Position(0, droop), 0.8)  # Increased from 0.5 to 0.8
+            time.sleep(0.7)  # Increased from 0.5 to 0.7
             
-            # Simulate nodding off, but milder
-            for i in range(1, 2):  # Just one cycle
-                # Nod down further (falling asleep)
-                self.head.move_to(Position(random.uniform(-2, 2), droop + 5), 0.3)
-                time.sleep(0.4)
-                
-                # Slow recovery (catching oneself from falling asleep)
-                self.head.move_to(Position(0, max(0, droop - 3)), 0.4)
-                time.sleep(0.2)
+            # Single subtle nodding cycle, slower
+            self.head.move_to(Position(random.uniform(-2, 2), droop + 4), 0.7)  # Increased from 0.4 to 0.7
+            time.sleep(0.5)  # Increased from 0.3 to 0.5
+            self.head.move_to(Position(0, max(0, droop - 2)), 0.8)  # Increased from 0.5 to 0.8
+            time.sleep(0.4)  # Increased from 0.2 to 0.4
             
-            # Final sleepy position
-            self.head.move_to(Position(0, droop), 0.3)
+            # Return to gentle drooped position, slower
+            self.head.move_to(Position(0, droop), 0.7)  # Increased from 0.4 to 0.7
     
     def _express_loving(self, is_continuation: bool) -> None:
         """
         Express love/affection through gentle tilting and mild nuzzling movements
         """
         # Milder upward tilt
-        base_tilt = -5
+        base_tilt = -7  # More pronounced tilt
         
         if is_continuation:
-            # For continuation, just do a single gentle nuzzle
-            # Small, gentle movement to one side
             side = random.choice([-1, 1])
-            self.head.move_to(Position(4 * side, base_tilt - 1), 0.4)
+            self.head.move_to(Position(6 * side, base_tilt - 2), 0.4)
             time.sleep(0.2)
+            
+            # Add gentle nuzzle movement
+            self.head.move_to(Position(4 * side, base_tilt - 4), 0.3)
+            time.sleep(0.1)
             self.head.move_to(Position(0, base_tilt), 0.4)
         else:
-            # Initial expression
-            # Gentle upward tilt
             self.head.move_to(Position(0, base_tilt), 0.6)
             time.sleep(0.2)
             
-            # Gentle, slow movements
-            # Gentler side-to-side motion with slight tilt changes
-            self.head.move_to(Position(5, base_tilt - 1), 0.5)
+            self.head.move_to(Position(7, base_tilt - 2), 0.5)
             time.sleep(0.2)
-            self.head.move_to(Position(-5, base_tilt + 1), 0.5)
+            self.head.move_to(Position(-7, base_tilt + 2), 0.5)
             time.sleep(0.2)
             
-            # Add a gentle, small nod
-            self.head.move_to(Position(0, base_tilt + 3), 0.4)
+            self.head.move_to(Position(0, base_tilt + 4), 0.4)
             time.sleep(0.1)
             self.head.move_to(Position(0, base_tilt), 0.5)
     
@@ -474,5 +453,5 @@ class Head_Emotions:
         Express neutral state - return to center position with slight variance
         """
         # Add very slight variance so it's not too robotic
-        random_offset = random.uniform(-2, 2)
+        random_offset = random.uniform(-12, 12)
         self.head.move_to(Position(random_offset, 0), 0.8)
