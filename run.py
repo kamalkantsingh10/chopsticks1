@@ -9,6 +9,7 @@ cs= Chopsticks()
 cs.show_emotion(Emotion.HAPPY.value)
 input("wow")
 cs.show_emotion(Emotion.SAD.value)
+
 input("wow")
 cs.show_emotion(Emotion.EXCITED.value)
 input("wow")

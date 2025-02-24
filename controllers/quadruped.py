@@ -4,7 +4,7 @@ import math
 import numpy as np
 from hw_drivers.legs.inverse_kinematics import QuadrupedLeg_right, QuadrupedLeg_left
 from core.enums import Emotion, Pose
-from emotions.quadruped import EmotionalBehaviors  # Import the new class
+from emotions.quadruped_1 import EmotionalBehaviors  # Import the new class
 
 POSES = {
     'stand': {

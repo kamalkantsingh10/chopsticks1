@@ -29,14 +29,10 @@ class AudioController:
             Emotion.NEUTRAL: {'speed': 160, 'pitch': 50, 'gap': 5}
         }
         
-    def _process_current_speech(self, text, emotion, intensity):
+    def _process_current_speech(self, text, emotion):
         """Processes speech requests"""
         self.is_speaking = True
-        try:
-            # Set volume based on intensity (0-100 scale)
-            volume = int(50+ intensity.value/2 * 100)
-            #set_volume(volume)
-                        
+        try:        
             # Apply emotional parameters
             params = self.emotion_params[emotion]
             self.tts.espeak_params(
@@ -51,13 +47,13 @@ class AudioController:
         finally:
             self.is_speaking = False
 
-    def speak(self, text: str, emotion: Emotion, intensity: Intensity) -> None:
+    def speak(self, text: str, emotion: Emotion) -> None:
         """
         Queue speech request. If there's already a request being processed,
         this new request will be ignored.
         """
         if not self.is_speaking:
-            self._process_current_speech(text, emotion, intensity)
+            self._process_current_speech(text, emotion)
         else:
             print("Speech in progress, ignoring new request")
 

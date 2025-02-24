@@ -20,8 +20,9 @@ from core.enums import Emotion, Intensity,Position, ServoConfig, Pose
 class Chopsticks:
     def __init__(self):
         #initialize server for socket
-        self.state={ "pose": "sitting",
-            "neck_tilt": 0
+        self.state={ "pose":Pose.STAND.value,
+            "neck_tilt": 0,
+            "emotion":Emotion.NEUTRAL
         }
         self.UDP_IP = "0.0.0.0"
         self.UDP_PORT = 5005
@@ -59,7 +60,7 @@ class Chopsticks:
         self.face.start()
         print("face screen set")
         tail_config = ServoConfig(
-            pin=1,
+            pin=0,
             min_angle=-30,
             max_angle=30,
             default_speed=1.0
@@ -102,9 +103,8 @@ class Chopsticks:
 
     def show_emotion(self, emotion):
         display_emotion= f"{emotion}"
-        self.tail.stop()
         emotion_to_show= Emotion.NEUTRAL
-        if emotion==Emotion.HAPPY.value:
+        if emotion == Emotion.HAPPY.value:
             emotion_to_show= Emotion.HAPPY
         elif emotion==Emotion.SAD.value:
             emotion_to_show= Emotion.SAD
@@ -132,8 +132,10 @@ class Chopsticks:
         self.head_em.express(emotion_to_show)
         self.tail.set_emotion(emotion_to_show)
         self.face.set_emotion(emotion_to_show)
-        self.quadruped.express_emotion(emotion_to_show)
-   
+        #show body movement for emotion only when standing or if sl
+        if self.state["pose"]==Pose.STAND.value:
+            self.quadruped.express_emotion(emotion_to_show)
+        self.state["emotion"]=emotion_to_show  #setting current set of emotion. this is used for Audio Pitching
         self.indicator.display_text(display_emotion)
 
 
@@ -199,4 +201,4 @@ class Chopsticks:
 
     
     def say(self, text):
-        self.voice.speak(text, Emotion.HAPPY, Intensity.NORMAL)
+        self.voice.speak(text, self.state.get("emotion"))
